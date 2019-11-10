@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 from .models import OutputModel
 
-# добавить проверку, существует ли сайт
+
 def parser(urls_name):
     links = []
     for url in urls_name:
@@ -27,7 +27,6 @@ def parser(urls_name):
                             e += str(q) + '  '
                     j += str(e)
                 data.append(j)
-
             else:
                 r = requests.get(link)
                 soup = BeautifulSoup(r.text, 'lxml')
