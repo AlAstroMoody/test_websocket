@@ -4,13 +4,21 @@ from .models import OutputModel
 
 
 def parser(urls_name):
+    lst = list(urls_name)
     links = []
-    for url in urls_name:
-        links.append(url.input_url)
+    times = []
+    for i in range(len(lst)):
+        links.append(lst[i].get('input_url'))
+        times.append(int(lst[i].get('input_minutes'))*60 + int(lst[i].get('input_seconds')))
+
     data = []
+    data_time = []
+    for time in times:
+        data_time.append(time)
+
 
     for link in links:
-        try:
+        try:                # проверка на доступ к сайту
             if OutputModel.objects.filter(save_url=link).exists():
                 j = ''
                 result = OutputModel.objects.filter(save_url=link).values('save_url', 'save_title', 'save_h1', 'save_encoding')
@@ -47,4 +55,4 @@ def parser(urls_name):
         except:
             data.append(link + ' - ошибочный url')
 
-    return data
+    return data, data_time

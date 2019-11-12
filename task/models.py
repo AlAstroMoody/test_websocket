@@ -1,12 +1,10 @@
-from datetime import timedelta
-
 from django.db import models
 
 
-# работа со временем DurationField?
-
 class TaskModel(models.Model):
     input_url = models.CharField(max_length=50, verbose_name = "Введите Url")
+    input_minutes = models.IntegerField(default=0, verbose_name = "минут")
+    input_seconds = models.IntegerField(default=0, verbose_name = "секунд")
 
     objects = models.Manager()
 
