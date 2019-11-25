@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'task',
+
 ]
 
 MIDDLEWARE = [
@@ -69,7 +70,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'challenge.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
