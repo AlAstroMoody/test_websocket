@@ -1,4 +1,4 @@
-Django==2.2.7
+Django==2.2.8
 requests==2.22.0
 BeautifulSoup4==4.8.1
 websockets==8.1
