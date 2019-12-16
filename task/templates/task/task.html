@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <title>Тестовое задание</title>
+</head>
+
+<body>
+    <H1>
+        тестовое задание
+    </H1>
+
+    <textarea id="output" cols="30" rows="10"></textarea>
+    <script>
+        var ws = new WebSocket("ws://127.0.0.1:5680/"),
+            messages = document.createElement('ul');
+        ws.onmessage = function (event) {
+            var messages = document.getElementById('output'),
+                message = document.createElement('li'),
+                content = document.createTextNode(event.data);
+
+
+            messages.value += event.data + '\n';
+        };
+        document.body.appendChild(messages); Child(messages);        
+    </script>
+
+</body>
+
+</html>

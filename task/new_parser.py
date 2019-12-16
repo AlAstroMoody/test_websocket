@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 
-from .models import OutputModel
+from task.models import OutputModel
 
 
 def parser(url):
@@ -10,7 +10,7 @@ def parser(url):
 
             j = ''
             result = OutputModel.objects.filter(save_url=url).values('save_url', 'save_title', 'save_h1',
-                                                                      'save_encoding')
+                                                                     'save_encoding')
             list_result = [entry for entry in result]
             for i in list_result:  # хитромудрый способ вытащить данные из queryset
                 k = i.values()
@@ -41,11 +41,11 @@ def parser(url):
             header = r.headers['Content-Type']
             inf = url + " — " + title + ' | ' + h1 + ' | ' + header
 
-            b = OutputModel(save_url=url, save_title=title, save_h1=h1, save_encoding=header)
+            b = OutputModel(save_url=url, save_title=title,
+                            save_h1=h1, save_encoding=header)
             b.save()
 
             return inf
-
 
     except:
         inf = str(url) + ' - ошибочный url'

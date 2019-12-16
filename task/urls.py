@@ -1,8 +1,9 @@
 from django.urls import path
 
-from .views import *
+from task.views import task, index_page
 
 urlpatterns = [
     path('task/', task, name='task'),
     path('', index_page),
+
 ]
