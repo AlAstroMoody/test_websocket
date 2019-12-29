@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-
     <title>Тестовое задание</title>
 </head>
 
@@ -12,21 +11,19 @@
     </H1>
     
     <textarea id="time" cols="50" rows="50"></textarea>
-    
     <textarea id="output" cols="150" rows="50"></textarea>
+
     <script>
-        var ws = new WebSocket("ws://127.0.0.1:5001/"),
-            messages = document.createElement('ul');
+        var ws = new WebSocket("ws://127.0.0.1:5001/");
+
         ws.onmessage = function (event) {
-            var messages = document.getElementById('output'),
-                message = document.createElement('li'),
-                content = document.createTextNode(event.data);
-            messages.value += event.data + '\n';
-            
-        };
-        document.body.appendChild(messages); Child(messages);        
+            var output = document.getElementById('output');
+            var time = document.getElementById('time');
+            data = JSON.parse(event.data);
+            output.value += data.info + '\n';
+            time.value += data.time + '\n';
+        }; 
     </script>
 
 </body>
-
 </html>

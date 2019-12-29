@@ -48,5 +48,5 @@ def parser(url):
             return inf
 
     except:
-        inf = str(url) + ' - ошибочный url'
+        inf = str(url) + ' ошибка'
         return inf
