@@ -176,6 +176,7 @@ SELECT table_2.employeeid, CONCAT (name, ' ', surname), position, salary_year/12
 FROM table_1, table_2, table_3
 WHERE table_2.employeeid = table_1.id AND table_3.employeeid = table_1.id;
 ```
+![картинка](https://cdn1.savepice.ru/uploads/2020/1/9/fa68ebd5aeb52b26c813f3153350f946-full.png)
 Наверняка можно  и поизысканнее написать запрос, но пока только так =D
 
 ![картинка](https://a.d-cd.net/BBAAAgD2seA-960.jpg)
