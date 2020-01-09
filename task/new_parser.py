@@ -1,4 +1,5 @@
 import requests
+
 from bs4 import BeautifulSoup
 
 from task.models import OutputModel
@@ -7,7 +8,6 @@ from task.models import OutputModel
 def parser(url):
     try:
         if OutputModel.objects.filter(save_url=url).exists():
-
             j = ''
             result = OutputModel.objects.filter(save_url=url).values('save_url', 'save_title', 'save_h1',
                                                                      'save_encoding')
@@ -23,9 +23,7 @@ def parser(url):
                     else:
                         e += str(q) + '  '
                 j += str(e)
-
-            return j
-
+            return j, True
         else:
             r = requests.get(url)
             soup = BeautifulSoup(r.text, "html.parser")
@@ -44,9 +42,9 @@ def parser(url):
             b = OutputModel(save_url=url, save_title=title,
                             save_h1=h1, save_encoding=header)
             b.save()
-
-            return inf
-
+            return inf, False
     except:
+        b = OutputModel(save_url= str(url) +' ошибка')
+        b.save()
         inf = str(url) + ' ошибка'
-        return inf
+        return inf, True
