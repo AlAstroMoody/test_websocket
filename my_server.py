@@ -15,25 +15,22 @@ from task.new_parser import parser
 async def server(websocket, path):
     count = 0
     while True:
-
-        solution, true = parser(all_records[count].get('input_url'))
-        timer = datetime.now().strftime("%d/%m/%y %H:%M:%S")
-        if true != True:
-            await asyncio.sleep(lst_timer[count])
-        else:
-            pass
-        if solution[-6::]=='ошибка':
-            data = {
-            'info': solution,
-            'time': str(timer + ' ошибка обработки URL’a')
-            }
-        else:
-            data = {
-            'info': solution,
-            'time': str(timer + ' успешно')
-               }
-        await websocket.send(json.dumps(data))
-        count += 1
+        # true = 0 - url есть в базе; 1 - нет в базе, парсить; 2 - нет доступа к сайту
+        if count < len(all_records):
+            solution, true = parser(all_records[count].get('input_url'))
+            timer = datetime.now().strftime("%d/%m/%y %H:%M:%S")
+            if true != 0:
+                await asyncio.sleep(lst_timer[count])
+            if true == 2:
+                data = {
+                'info': solution,
+                'time': f'{timer} ошибка обработки URL’a'}
+            else:
+                data = {
+                'info': solution,
+                'time': f'{timer} успешно'}
+            await websocket.send(json.dumps(data))
+            count += 1
 
 
 start_server = websockets.serve(server, "127.0.0.1", 5001)
