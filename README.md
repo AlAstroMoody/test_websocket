@@ -116,6 +116,7 @@ github.com, gitlab.com, bitbucket.org, Sourceforge (sf.net), launchpad.net
 ```
 Заходим на http://127.0.0.1:8000/ 
 Работает!
+![картинка](https://cdn1.savepice.ru/uploads/2020/1/19/c5b32de09547edfe0bcc2e61621c97b5-full.png)
 - Код не мульти-версионный, используется Python 3.7.5
 - Поддержки Python 2.0+ нет и не ожидается :/
 - Логин/пароль админки по умолчанию: admin/admin
