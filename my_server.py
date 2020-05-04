@@ -1,43 +1,66 @@
-from datetime import datetime
 import asyncio
-import websockets
-import os
-import django
 import json
+import os
+from datetime import datetime
+from queue import Queue
+
+import django
+import websockets
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "challenge.settings")
-django.setup() 
+django.setup()
 
-from task.models import TaskModel, OutputModel
+from task.models import TaskModel
 from task.new_parser import parser
 
 
 async def server(websocket, path):
-    count = 0
+    print('Сервер запущен!')
     while True:
-        # true = 0 - url есть в базе; 1 - нет в базе, парсить; 2 - нет доступа к сайту
-        solution, true = parser(all_records[count].get('input_url'))
-        timer = datetime.now().strftime("%d/%m/%y %H:%M:%S")
-        if true != 0:
-            await asyncio.sleep(lst_timer[count])
-        if true == 2:
+        # раз в пять секунд проверка не появилось ли новых url, если очередь пуста.
+        # ошибочный подход, но как изменить?
+        while q.qsize() == 0:
+            await cycle()
+            if q.qsize() == 0:
+                await asyncio.sleep(5)
+        try:
+            solution = parser(q.get())
+            timer = datetime.now().strftime("%d/%m/%y %H:%M:%S")
+            if solution['status'] == 'ok':
+                await asyncio.sleep(solution['seconds'])
+            if solution['status'] == 'error':
+                data = {
+                    'info': solution['url'],
+                    'time': f'{timer} ошибка обработки URL’a'
+                }
+            else:
+                data = {
+                    'info': f"{solution['url']} - \n\ttitle: {solution['title']}, "
+                            f"\n\tH1: {solution['h1']}, \n\theader: {solution['header']}",
+                    'time': f"{timer} успешно"
+                }
+            await websocket.send(json.dumps(data))
+
+        except IndexError:
             data = {
-            'info': solution,
-            'time': f'{timer} ошибка обработки URL’a'}
-        else:
-            data = {
-            'info': solution,
-            'time': f'{timer} успешно'}
-        await websocket.send(json.dumps(data))
-        count += 1
+                'info': "Кажется в базе нет записей",
+                'time': "Попытаемся ещё через 60 секунд"
+            }
+            await websocket.send(json.dumps(data))
+            await asyncio.sleep(60)
+
+
+async def cycle():
+    queryset = TaskModel.objects.all()
+    for value in queryset.values('input_url'):
+        if value['input_url'] not in url_lst:
+            q.put(value['input_url'])
+            url_lst.append(value['input_url'])
 
 
 start_server = websockets.serve(server, "127.0.0.1", 5001)
-lst_timer = []
-all_records = TaskModel.objects.values('input_url')
-time_records = TaskModel.objects.values('input_seconds', 'input_minutes')
-for i in time_records:
-    lst_timer.append(int(i.get('input_seconds')) + int(i.get('input_minutes')) * 60)
+q = Queue()
+url_lst = ['']
 
 asyncio.get_event_loop().run_until_complete(start_server)
 asyncio.get_event_loop().run_forever()

@@ -1,41 +1,40 @@
 import requests
-
 from bs4 import BeautifulSoup
 
-from task.models import OutputModel
+from task.models import OutputModel, TaskModel
 
 
 def parser(url):
-    if OutputModel.objects.filter(save_url=url).exists(): 
+    if OutputModel.objects.filter(save_url=url).exists():
         for element in OutputModel.objects.filter(save_url=url):
             url = element.save_url
             h1 = element.save_h1
             title = element.save_title
             header = element.save_encoding
-        inf = f'{url} — {title} {h1} {header}'
-        return inf, 0 
+            data = {'url': url, 'title': title, 'h1': h1, 'header': header, 'status': 'from_db'}
+            return data
     else:
         try:
             r = requests.get(url)
             soup = BeautifulSoup(r.text, "html.parser")
             try:
-                h1 = '\n' + f'H1: {soup.find("h1").text.strip()}'
-            except:
-                h1 = ""
+                h1 = soup.find("h1").text.strip()
+            except AttributeError:
+                h1 = 'отсутствует'
             try:
-                title = '\n' + f'Заголовок: {soup.find("title").text.strip()}'
-            except:
-                title = ""
+                title = soup.find("title").text.strip()
+            except AttributeError:
+                title = 'отсутствует'
             try:
-                header = '\n' + f'Кодировка страницы: {r.headers["Content-Type"]}'
-            except:
-                header = "" 
-            inf = f'{url} — {title} {h1} {header}'
-            b = OutputModel(save_url=url, save_title=title,
-                            save_h1=h1, save_encoding=header)
-            b.save()
-            return inf, 1
-
-        except:
-            inf = f'{url}'
-            return inf, 2
+                header = r.headers["Content-Type"]
+            except AttributeError:
+                header = 'отсутствует'
+            record = TaskModel.objects.get(input_url=url)
+            seconds = int(record.input_minutes)*60 + int(record.input_seconds)
+            data = {'url': url, 'title': title, 'h1': h1, 'header': header, 'status': 'ok', 'seconds': seconds}
+            OutputModel.objects.create(save_url=url, save_title=title,
+                                       save_h1=h1, save_encoding=header, seconds=seconds)
+            return data
+        except ValueError:
+            data = {'url': url, 'status': 'error', 'seconds': 0}
+            return data
